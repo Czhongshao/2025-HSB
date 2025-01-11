@@ -1,5 +1,4 @@
 clc; clear; close all;
-% 热力图1
 %% 导入初始数据
 df = readtable('../../data/近十年各行业生产总值数据-en', 'Sheet', 'Sheet1');
 format long
@@ -30,8 +29,8 @@ map = slanCM('Reds'); % 使用'slanCM'函数定义颜色映射
 
 %% 图片尺寸设置（单位：厘米）
 figureUnits = 'centimeters';
-figureWidth = 12;
-figureHeight = 11;
+figureWidth = 16;
+figureHeight = 12;
 
 %% 窗口设置
 figureHandle = figure;
@@ -55,9 +54,6 @@ h = heatmap(xvalues, yvalues, correlation_matrix, ...
 h.GridVisible = 'on'; % 显示网格线
 
 %% 细节优化
-% 设置字体和字号
-set(gca, 'FontName', 'Arial', 'FontSize', 10)
-
 % 设置背景颜色为白色
 set(gcf, 'Color', [1 1 1]);
 
