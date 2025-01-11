@@ -24,6 +24,8 @@
 ## Generated if empty string is given at "Please type another file name for output:"
 .pdf
 
+.idea
+
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
 *.bcf
@@ -304,3 +306,5 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+.idea/华数杯国际模板01.iml
+.idea/misc.xml
