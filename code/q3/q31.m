@@ -18,8 +18,7 @@ head(data_GDPs, 5);
 X_data_time = data_investment.Years - 2002; 
 % 因变量
 Chanye = 'S2'; % S2-S10
-y_data = data_investment{:, Chanye};
-y_data2 = data_GDPs{:, Chanye};
+y_data = data_GDPs{:, Chanye} - data_investment{:, Chanye};
 
 % 拟合函数
 [fitresult, gof] = investment_fun1(Chanye, X_data_time, y_data);
@@ -53,7 +52,7 @@ function [fitresult, gof] = investment_fun1(name, X_data_time, Y_data_investment
     % 设置 fittype 和选项
     ft = fittype('poly1');
     opts = fitoptions('Method', 'LinearLeastSquares');
-    opts.Robust = 'LAR';
+    opts.Robust = 'Bisquare';
     
     % 对数据进行模型拟合
     [fitresult, gof] = fit(xData, yData, ft, opts);
