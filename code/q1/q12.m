@@ -1,7 +1,7 @@
 clc; clear; close all;
 % 三维柱状图
 %% 导入数据
-df = readtable('../../data/近十年各行业生产总值数据-en', 'Sheet', 'Sheet1');
+df = readtable('../../data/近二十年各行业生产总值数据-en', 'Sheet', 'Sheet1');
 format long
 % 显示前5行数据
 head(df, 5);
@@ -31,7 +31,7 @@ end
 %% 添加坐标轴和标签
 hXLabel = xlabel('Years'); % X轴表示年份
 hYLabel = ylabel('Each Industries'); % Y轴表示行业
-hZLabel = zlabel('GDPs(\fontname{宋体}￥)'); % Z轴表示GDP数值
+hZLabel = zlabel('GDPs(CNY)'); % Z轴表示GDP数值
 
 set(gca, 'XTickLabel', string(years), 'XTick', 1:numel(years)); % 设置年份标签
 set(gca, 'YTickLabel', arrayfun(@(x) ['S', num2str(x+1)], 1:numel(industrys), 'UniformOutput', false), 'YTick', 1:numel(industrys)); % 设置行业标签为S2 - S10
@@ -58,5 +58,5 @@ figW = figureWidth;
 figH = figureHeight;
 set(figureHandle, 'PaperUnits', figureUnits);
 set(figureHandle, 'PaperPosition', [0 0 figW figH]);
-fileout = 'q1_EveryData_Bar';
+fileout = 'q1_EveryData_Bar20';
 print(figureHandle, ['../../img/', fileout, '.png'], '-r500', '-dpng');

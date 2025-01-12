@@ -1,17 +1,17 @@
 clc; clear; close all;
 
 %% 导入数据
-df = readtable('../../data/近十年各行业生产总值数据-en', 'Sheet', 'Sheet1');
+df = readtable('../../data/近二十年各行业生产总值数据-en', 'Sheet', 'Sheet1');
 format long;
 
-% 删除不需要的列（如年份列）
+% 删除不需要的列
 if ismember('Years', df.Properties.VariableNames)
     df.Years = [];
 end
 
 % 显示前五行数据
 disp("数据前五行：");
-disp(head(df, 5));
+head(df, 5)
 
 %% 数据处理
 % 初始化增长率表格
@@ -68,5 +68,5 @@ figW = figureWidth;
 figH = figureHeight;
 set(figureHandle, 'PaperUnits', figureUnits);
 set(figureHandle, 'PaperPosition', [0 0 figW figH]);
-fileout = 'q1_Scatter_Heatmap';
+fileout = 'q1_Scatter_Heatmap20';
 print(figureHandle, ['../../img/', fileout, '.png'], '-r500', '-dpng');
