@@ -1,16 +1,18 @@
 clc; clear; close all;
-% 拟合行业GDP总值和行业投资总值的关系
+% 拟合行业GDP增长率和行业投资增长率的关系
 %% 导入初始数据
-data_investment = readtable('../../data/近二十年各产业投资情况数据表.xlsx', 'Sheet', 'Sheet2', 'VariableNamingRule', 'preserve');
-data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
+data_investment = readtable('../../data/20y-investment增长率.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
+data_GDPs = readtable('../../data/20y-GDPs增长率.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
 format long
 
-% 删除GDPs当中的总GDP列
+% 删除无用列
+data_GDPs(:, 1) = [];
 data_GDPs(:, 2) = [];
+data_investment(:, 1) = [];
 
-disp('行业投资总值');
+disp('行业投资增长率');
 head(data_investment, 5);
-disp('行业GDP总值');
+disp('行业GDP增长率');
 head(data_GDPs, 5);
 
 %% 数据导入
@@ -23,8 +25,12 @@ X_data_investment = data_investment{:, Chanye};
 Y_data_GDP = data_GDPs{:, Chanye};
 
 %% 建立回归模型
-% 拟合函数
+% 调用自定义函数
 [fitresult, gof] = investment_fun2(Chanye, X_data_investment, Y_data_GDP);
+
+% 显示拟合结果
+disp('拟合结果：');
+disp(fitresult);
 
 % 显示拟合优度
 disp('拟合优度 (R^2)：');
@@ -51,22 +57,22 @@ function [fitresult, gof] = investment_fun2(name, X_data_investment, Y_data_GDP)
     [fitresult, gof] = fit(xData, yData, ft, opts);
     
     % 绘制拟合结果
-    figure('Name', [name ' GDP vs. Investment']);
+    figure('Name', [name ' GDP Growth with Investment']);
     h = plot(fitresult, xData, yData);
-    legend(h, [name ' Actual Values'], [name ' Fitted Curve'], ...
+    legend(h, [name ' Actual Growth Rate'], [name ' Fitted Curve'], ...
            'Location', 'NorthEast', 'Interpreter', 'none');
     
-    % 增加图像美化
-    xlabel('Investment Amount', 'Interpreter', 'none', 'FontSize', 12);
-    ylabel('GDP Value', 'Interpreter', 'none', 'FontSize', 12);
-    % title([name ' Investment and GDP Relationship'], 'FontSize', 14, 'FontWeight', 'bold');
-    grid on;
-    
-    % 调整线条和点样式
+    % 设置散点样式和拟合曲线线宽
     h(1).Marker = '.';       % 数据点的形状
     h(1).MarkerSize = 10;     % 数据点大小
     h(1).LineStyle = 'none'; % 数据点无连接线
     h(2).LineWidth = 2;      % 拟合曲线的线宽
+    
+    % 增加图像美化
+    xlabel('Investment Growth Rate (%)', 'Interpreter', 'none', 'FontSize', 12);
+    ylabel('GDP Growth Rate (%)', 'Interpreter', 'none', 'FontSize', 12);
+    % title([name ' Investment and GDP Growth Relationship'], 'FontSize', 14, 'FontWeight', 'bold');
+    grid on;
     
     % 设置坐标轴样式
     set(gca, 'LineWidth', 1.5, 'FontSize', 12);
