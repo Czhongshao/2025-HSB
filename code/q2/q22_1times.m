@@ -8,6 +8,11 @@ format long
 % 删除GDPs当中的总GDP列
 data_GDPs(:, 2) = [];
 
+data_investment{[6, 11, 12], "S8"} = NaN;
+data_GDPs{[6, 11, 12], "S8"} = NaN;
+
+data_investment{[1, 6, 20], "S5"} = NaN;
+
 disp('行业投资总值');
 head(data_investment, 5);
 disp('行业GDP总值');
@@ -35,12 +40,13 @@ for i = 2:10
     % 提取拟合参数
     coeffs = coeffvalues(fitresult); % 拟合参数
     
-    % 计算MAE和RMSE
+    % 计算MAE和RMSE，忽略NaN值
     y_fit = feval(fitresult, X_data_investment);
     residuals = Y_data_GDP - y_fit;
-    MAE = mean(abs(residuals));
-    RMSE = sqrt(mean(residuals.^2));
-    
+    MAE = nanmean(abs(residuals));
+    RMSE = sqrt(nanmean(residuals.^2));
+
+
     % 将拟合结果添加到表格中
     T(i-1, :) = {Chanye, coeffs(1), coeffs(2), gof.rsquare, MAE, RMSE};
 end

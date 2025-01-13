@@ -1,60 +1,18 @@
 clc; clear; close all;
-% 拟合年份与利润（GDP与投资值的差值）的关系
-%% 导入初始数据
-data_investment = readtable('../../data/近二十年各产业投资情况数据表.xlsx', 'Sheet', 'Sheet2', 'VariableNamingRule', 'preserve');
-data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
-format long
+% 给定投资金额，规划投资计划，求得最大GDP值
+%% 导入各个产业的拟合函数
+% 定义变量
+syms I2 I3 I4 I5 I6 I7 I8 I9 I10
 
-% 删除总GDP列与年份
-data_GDPs(:, 1:2) = [];
-data_year = data_investment.Years;
-data_investment(:, 1) = [];
+GDP2 = 1.66 * I2 + 23419.39; % GDP2 函数
+GDP3 = 40290.48 * I3^2 + 1.17 * I3 - 9.35e-7; % GDP3 函数
+GDP4 = 46808.84 * exp(1.54e6 * I4) - 66777.28 * exp(5.57e-4 * I4); % GDP4 函数
+GDP5 = -160800.24 * exp(1.83e-4 * I5) + 133611.89 * exp(2.44e-5 * I5); % GDP5 函数
+GDP6 = 8147.80 * I6^2 + 0.28 * I6 + 3.86e-6; % GDP6 函数
+GDP7 = 3711.69 * I7^2 + 0.35 * I7 + 2.88e-4; % GDP7 函数
+GDP8 = 5.54e8 * exp(-6.69e-4 * I8) - 5.54e8 * exp(-6.70e-4 * I8); % GDP8 函数
+GDP9 = -518.15 * I9^2 + 0.45 * I9 - 6.46e-7; % GDP9 函数
+GDP10 = 205295.60 * exp(2.83e-7 * I10) - 190772.57 * exp(-9.04e-6 * I10); % GDP10 函数
 
-data_investment{[6, 11, 12], "S8"} = NaN;
-data_GDPs{[6, 11, 12], "S8"} = NaN;
-
-% data_investment{[1, 6, 20], "S5"} = NaN;
-% data_GDPs{[1, 6, 20], "S5"} = NaN;
-
-disp('行业投资总值');
-head(data_investment, 20);
-disp('行业GDP总值');
-head(data_GDPs, 20);
-
-
-%% 计算投资回报率
-
-% 计算利润（GDP与投资值的差值）
-profits = data_GDPs - data_investment;
-
-% 计算投资回报率
-investment_returns = profits ./ data_investment;
-
-% 显示计算结果
-disp('行业投资总值');
-head(data_investment, 5);
-disp('行业GDP总值');
-head(data_GDPs, 5);
-disp('利润（GDP与投资值的差值）');
-head(profits, 5);
-disp('投资回报率');
-head(investment_returns, 5);
-
-% 计算每个行业的投资回报率的平均值
-average_investment_returns = mean(investment_returns, 1, 'omitnan');
-
-% 输出每个行业的投资回报率的平均值
-disp('每个行业的投资回报率的平均值：');
-disp(average_investment_returns);
-
-average_investment_returns = table2array(average_investment_returns);
-
-% 绘制每个行业的投资回报率的平均值的柱状图
-figure;
-bar(average_investment_returns);
-title('各行业投资回报率的平均值');
-xlabel('行业');
-ylabel('投资回报率的平均值');
-xticklabels(data_investment.Properties.VariableNames);
-% xtickangle(45); % 旋转x轴标签，使其更易读
-grid on;
+% 定义总GDP（负值）
+GDP_total = -(GDP2 + GDP3 + GDP4 + GDP5 + GDP6 + GDP7 + GDP8 + GDP9 + GDP10);

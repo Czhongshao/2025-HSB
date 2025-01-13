@@ -1,96 +1,63 @@
 clc; clear; close all;
-% 拟合年份与利润（GDP与投资值的差值）的关系
-%% 导入初始数据
-data_investment = readtable('../../data/近二十年各产业投资情况数据表.xlsx', 'Sheet', 'Sheet2', 'VariableNamingRule', 'preserve');
-data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
-format long
+% 给定投资金额，规划投资计划，求得最大GDP值
+%% 导入各个产业的拟合函数
+% 定义变量
+syms I2 I3 I4 I5 I6 I7 I8 I9 I10
 
-% 删除GDPs当中的总GDP列
-data_GDPs(:, 2) = [];
+GDP2 = 1.66 * I2 + 23419.39; % GDP2 函数
+GDP3 = 40290.48 * I3^2 + 1.17 * I3 - 9.35e-7; % GDP3 函数
+GDP4 = 46808.84 * exp(1.54e6 * I4) - 66777.28 * exp(5.57e-4 * I4); % GDP4 函数
+GDP5 = -160800.24 * exp(1.83e-4 * I5) + 133611.89 * exp(2.44e-5 * I5); % GDP5 函数
+GDP6 = 8147.80 * I6^2 + 0.28 * I6 + 3.86e-6; % GDP6 函数
+GDP7 = 3711.69 * I7^2 + 0.35 * I7 + 2.88e-4; % GDP7 函数
+GDP8 = 5.54e8 * exp(-6.69e-4 * I8) - 5.54e8 * exp(-6.70e-4 * I8); % GDP8 函数
+GDP9 = -518.15 * I9^2 + 0.45 * I9 - 6.46e-7; % GDP9 函数
+GDP10 = 205295.60 * exp(2.83e-7 * I10) - 190772.57 * exp(-9.04e-6 * I10); % GDP10 函数
 
-disp('行业投资总值');
-head(data_investment, 5);
-disp('行业GDP总值');
-head(data_GDPs, 5);
+% 单位投资（亿元）的回报率
+S = [12.9983654483323, 0.636020380770955, 5.88642340151705, 6.00970398680209, 0.510267404135663, 2.22567840375023, 67.4657142638317, 0.288901095708213, 0.569974325583096];
 
-%% 数据导入
-% 导入时间数据 2003-2023年
-X_data_time = data_investment.Years - 2002; 
-% 因变量
-Chanye = 'S5'; % S2-S10
-y_data = data_GDPs{:, Chanye} - data_investment{:, Chanye};
+%% 对数化与线性化
+syms x3 x6 x7 x9
+GDP_2 = 1.66 * I2 + 23419.39;
 
-% 拟合函数
-[fitresult, gof] = investment_fun1(Chanye, X_data_time, y_data);
+GDP_3 = 40290.48 * x3 + 1.17 * I3 - 9.35e-7;
 
-% 显示拟合结果
-disp('拟合结果：');
-disp(fitresult);
+GDP_4 = log(46808.84) + 1.54e6 * I4 - log(66777.28) + 5.57e-4 * I4;
 
-% 显示拟合优度
-disp('拟合优度 (R^2)：');
-disp(gof.rsquare);
+GDP_5 = log(-160800.24) + 1.83e-4 * I5 + log(133611.89) + 2.44e-5 * I5;
 
-% 提取拟合参数
-coeffs = coeffvalues(fitresult); % 拟合参数
-disp('拟合参数值 ：');
-disp(Chanye);
-fprintf('斜率 (β): %.4f\n', coeffs(1));
-fprintf('截距: %.4f\n', coeffs(2));
-%% 拟合某行业的投资增长率随年份变化
-function [fitresult, gof] = investment_fun1(name, X_data_time, Y_data_investment1)
+GDP_6 = 8147.80 * x6 + 0.28 * I6 + 3.86e-6;
 
-    % 要进行拟合某行业的投资增长率随年份变化数据:
-    % X 输入: X_data_time
-    % Y 输出: Y_data_investment1
-    % 输出:
-    % fitresult: 表示拟合的拟合对象。
-    % gof: 带有拟合优度信息的结构体。
-    
-    [xData, yData] = prepareCurveData(X_data_time, Y_data_investment1);
-    
-    % 设置 fittype 和选项
-    ft = fittype('poly1');
-    opts = fitoptions('Method', 'LinearLeastSquares');
-    opts.Robust = 'Bisquare';
-    
-    % 对数据进行模型拟合
-    [fitresult, gof] = fit(xData, yData, ft, opts);
-    
-    % 绘制数据拟合图
-    figure('Name', [name ' Investment Growth Rate over Years']);
-    h = plot(fitresult, xData, yData);
-    legend(h, [name ' Actual Investment Growth Rate'], [name ' Fitted Curve'], 'Location', 'NorthEast', 'Interpreter', 'none');
-    
-    % 设置点和线的属性
-    h(1).Marker = '.';       % 数据点的形状为点
-    h(1).MarkerSize = 10;     % 数据点大小
-    h(1).LineStyle = 'none'; % 取消连接线（仅显示点）
-    h(2).LineWidth = 2;      % 拟合曲线的线宽
-    
-    % 为坐标区加标签
-    xlabel('Year', 'Interpreter', 'none', 'FontSize', 12);
-    ylabel('Investment Growth Rate (%)', 'Interpreter', 'none', 'FontSize', 12);
-    grid on;
-    
-    % 设置 x 轴的刻度均匀分布
-    num_ticks = 10; % 设定希望的刻度数量
-    x_min = min(X_data_time);
-    x_max = max(X_data_time);
-    xtick_positions = linspace(x_min, x_max, num_ticks); % 均匀分布的刻度位置
-    xtick_labels = round(xtick_positions + 2002); % 转换为实际年份
-    
-    xticks(xtick_positions);
-    xticklabels(xtick_labels);
-    
-    % 设置坐标轴样式
-    set(gca, 'LineWidth', 1.5, 'FontSize', 12);
+GDP_7 = 3711.69 * x7 + 0.35 * I7 + 2.88e-4;
 
-    % 调整 x 轴和 y 轴范围以确保显示更美观
-    xlim([x_min - 0.5, x_max + 0.5]);
-    ylim([min(yData) - 0.05 * range(yData), max(yData) + 0.05 * range(yData)]);
-    
-    % 显示拟合结果中的参数
-    disp('Fitted parameters (slope and intercept):');
-    disp(coeffvalues(fitresult));
-end
+GDP_8 = log(5.54e8) - 6.69e-4 * I8 + log(5.54e8) - 6.70e-4 * I8;
+
+GDP_9 = -518.15 * x9 + 0.45 * I9 - 6.46e-7;
+
+GDP_10 = log(205295.60) + 2.83e-7 * I10 - log(190772.57) - 9.04e-6 * I10;
+
+%% 线性规划
+
+%% 定义投资金额的上下限（线性化后的投资金额）
+% 投资金额变量
+I = [I2, I3, I4, I5, I6, I7, I8, I9, I10];
+
+% 线性化后的目标函数系数
+c = [1.66, 40290.48, log(46808.84) + 1.54e6, log(-160800.24) + 1.83e-4, 8147.80, 3711.69, log(5.54e8) - 6.69e-4, -518.15, log(205295.60) + 2.83e-7];
+
+% 线性化后的约束条件
+A = ones(1, 9); % 总和限制： I2 + I3 + ... + I10 <= 10000
+b = 10000;
+
+lb = [2, 3, 4, 5, 6, 7, 8, 9, 10]; % 每个投资的最小值
+
+% 线性规划求解
+options = optimset('Display','off'); % 不显示优化过程
+[x, fval] = linprog(-c, [], [], A, b, lb, [], options); % 目标函数是最大化，所以使用 -c
+
+% 输出结果
+disp('Optimal investment distribution (I2 to I10):');
+disp(x);
+disp('Maximum GDP value:');
+disp(-fval); % 最大GDP值
