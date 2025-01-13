@@ -1,16 +1,18 @@
 clc; clear; close all;
-% 拟合行业GDP总值和行业投资总值的关系
+% 拟合行业GDP增长率和行业投资增长率的关系
 %% 导入初始数据
-data_investment = readtable('../../data/近二十年各产业投资情况数据表.xlsx', 'Sheet', 'Sheet2', 'VariableNamingRule', 'preserve');
-data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
+data_investment = readtable('../../data/20y-investment增长率.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
+data_GDPs = readtable('../../data/20y-GDPs增长率.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
 format long
 
-% 删除GDPs当中的总GDP列
+% 删除无用列
+data_GDPs(:, 1) = [];
 data_GDPs(:, 2) = [];
+data_investment(:, 1) = [];
 
-disp('行业投资总值');
+disp('行业投资增长率');
 head(data_investment, 5);
-disp('行业GDP总值');
+disp('行业GDP增长率');
 head(data_GDPs, 5);
 
 %% 数据导入
@@ -23,8 +25,12 @@ X_data_investment = data_investment{:, Chanye};
 Y_data_GDP = data_GDPs{:, Chanye};
 
 %% 建立回归模型
-% 拟合函数
+% 调用自定义函数
 [fitresult, gof] = investment_fun2(Chanye, X_data_investment, Y_data_GDP);
+
+% 显示拟合结果
+disp('拟合结果：');
+disp(fitresult);
 
 % 显示拟合优度
 disp('拟合优度 (R^2)：');
@@ -43,7 +49,7 @@ function [fitresult, gof] = investment_fun2(name, X_data_investment, Y_data_GDP)
     [xData, yData] = prepareCurveData(X_data_investment, Y_data_GDP);
     
     % 设置拟合类型和选项
-    ft = fittype('poly1'); % 一次多项式
+    ft = fittype('poly2'); % 二次多项式
     opts = fitoptions('Method', 'LinearLeastSquares');
     opts.Robust = 'LAR'; % 对异常值的鲁棒回归
     
@@ -59,13 +65,12 @@ function [fitresult, gof] = investment_fun2(name, X_data_investment, Y_data_GDP)
     % 增加图像美化
     xlabel('Investment Amount', 'Interpreter', 'none', 'FontSize', 12);
     ylabel('GDP Value', 'Interpreter', 'none', 'FontSize', 12);
-    % title([name ' Investment and GDP Relationship'], 'FontSize', 14, 'FontWeight', 'bold');
     grid on;
     
     % 调整线条和点样式
     h(1).Marker = '.';       % 数据点的形状
     h(1).MarkerSize = 10;     % 数据点大小
-    h(1).LineStyle = '-'; % 数据点连接线
+    h(1).LineStyle = '-'; % 数据点无连接线
     h(2).LineWidth = 2;      % 拟合曲线的线宽
     
     % 设置坐标轴样式
@@ -76,6 +81,6 @@ function [fitresult, gof] = investment_fun2(name, X_data_investment, Y_data_GDP)
     ylim([min(yData) - 0.05 * range(yData), max(yData) + 0.05 * range(yData)]);
     
     % 显示拟合结果的参数
-    disp('Fitted parameters (slope and intercept):');
+    disp('Fitted parameters (a, b, c):');
     disp(coeffvalues(fitresult));
 end

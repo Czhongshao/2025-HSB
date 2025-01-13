@@ -66,7 +66,7 @@ function [fitresult, gof] = investment_fun1(name, X_data_time, Y_data_investment
     % 设置点和线的属性
     h(1).Marker = '.';       % 数据点的形状为点
     h(1).MarkerSize = 10;     % 数据点大小
-    h(1).LineStyle = 'none'; % 取消连接线（仅显示点）
+    h(1).LineStyle = '-'; % 取消连接线（仅显示点）
     h(2).LineWidth = 2;      % 拟合曲线的线宽
     
     % 为坐标区加标签

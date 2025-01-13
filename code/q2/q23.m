@@ -65,7 +65,7 @@ function [fitresult, gof] = investment_fun2(name, X_data_investment, Y_data_GDP)
     % 设置散点样式和拟合曲线线宽
     h(1).Marker = '.';       % 数据点的形状
     h(1).MarkerSize = 10;     % 数据点大小
-    h(1).LineStyle = 'none'; % 数据点无连接线
+    h(1).LineStyle = '-'; % 数据点无连接线
     h(2).LineWidth = 2;      % 拟合曲线的线宽
     
     % 增加图像美化

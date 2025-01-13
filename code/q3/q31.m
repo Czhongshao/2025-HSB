@@ -1,5 +1,5 @@
 clc; clear; close all;
-% 拟合年份与投资增长率之间的关系
+% 拟合年份与利润（GDP与投资值的差值）的关系
 %% 导入初始数据
 data_investment = readtable('../../data/近二十年各产业投资情况数据表.xlsx', 'Sheet', 'Sheet2', 'VariableNamingRule', 'preserve');
 data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
@@ -17,7 +17,7 @@ head(data_GDPs, 5);
 % 导入时间数据 2003-2023年
 X_data_time = data_investment.Years - 2002; 
 % 因变量
-Chanye = 'S2'; % S2-S10
+Chanye = 'S5'; % S2-S10
 y_data = data_GDPs{:, Chanye} - data_investment{:, Chanye};
 
 % 拟合函数
