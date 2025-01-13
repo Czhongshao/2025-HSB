@@ -19,7 +19,7 @@ head(data_GDPs, 5);
 X_data_time = data_investment.Years; 
 
 % 初始化表格用于存储拟合结果
-T = table('Size', [9 8], 'VariableTypes', {'string', 'double', 'double', 'double', 'double', 'double', 'double', 'double'}, 'VariableNames', {'产业', '指数系数1', '指数系数2', '截距1', '截距2', 'R方（拟合系数）', 'MAE（平均绝对误差）', 'RMSE（均方根误差）'});
+T = table('Size', [9 8], 'VariableTypes', {'string', 'double', 'double', 'double', 'double', 'double', 'double', 'double'}, 'VariableNames', {'产业', '系数1', '指数系数1', '系数2', '指数系数2', 'R方（拟合系数）', 'MAE（平均绝对误差）', 'RMSE（均方根误差）'});
 
 % 对S2-S10进行循环拟合
 for i = 2:10
