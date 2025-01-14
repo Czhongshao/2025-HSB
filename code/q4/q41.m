@@ -96,7 +96,7 @@ colors = [
     153/255 135/255 206/255  % #9987ce
 ];
 
-%% 绘制针状图1
+%% 绘制针状图1（就业弹性-工资弹性图）
 X = 1:length(data_investment.Properties.VariableNames);
 
 % 定义因变量
@@ -165,7 +165,7 @@ X = 1:length(data_investment.Properties.VariableNames);
 Y1 = combined_elasticity;             % 综合弹性
 Y2 = investment_allocation;           % 投资分配
 
-% 设置颜色（可以手动调整）
+% 设置颜色
 leftColor = [63/255 178/255 238/255];  % 左侧颜色
 rightColor = [249/255 149/255 136/255]; % 右侧颜色
 
@@ -231,28 +231,43 @@ selected_colors = colors(selected_indices, :);
 labels = arrayfun(@(x) sprintf('%s: %.2f%%', data_investment.Properties.VariableNames{selected_indices(x)}, selected_investment_proportion(x) * 100), 1:length(selected_investment_proportion), 'UniformOutput', false);
 
 % 绘制饼图
-pie(selected_investment_proportion, labels);
+pie_handle = pie(selected_investment_proportion, labels);
 
 % 设置颜色
-colormap(selected_colors);
-
-
-% 添加图例
-hLegend = legend(data_investment.Properties.VariableNames(selected_indices), ...
-                 'Position', [0.85 0.15 0.1 0.3]);
-hLegend.ItemTokenSize = [5 5];
-legend('boxoff');
-
-% 字体和字号
-th = findobj(gca, 'Type', 'text');
-set(th, 'FontName', 'Arial', 'FontSize', 11)
-set(hLegend, 'FontName', 'Arial', 'FontSize', 9)
-% set(hTitle, 'FontSize', 12, 'FontWeight', 'bold')
-
-% 在饼图内显示投资金额
-investment_labels = arrayfun(@(x) sprintf('%.2f Billion Yuan', selected_investment_proportion(x) * total_investment), 1:length(selected_investment_proportion), 'UniformOutput', false);
-textHandles = findobj(gca, 'Type', 'text');
-for i = 1:length(investment_labels)
-    textHandles(i).String = investment_labels{i};
+for i = 1:2:length(pie_handle)
+    pie_handle(i).FaceColor = selected_colors(ceil(i / 2), :); % 使用统一的颜色映射
 end
 
+% 删除饼图中的所有文本标签
+th = findobj(gca, 'Type', 'text');
+delete(th); % 删除标签文本
+
+% 在饼图旁边绘制标签和比例数据
+legend_labels = strcat(data_investment.Properties.VariableNames(selected_indices));
+hLegend = legend(pie_handle(1:2:end), legend_labels, 'Location', 'eastoutside'); % 标签位于图例外侧
+
+% 细节优化：去除图例的边框
+legend('boxoff');
+
+% 设置图表标题
+% set(gca, 'FontName', 'Arial', 'FontSize', 10);
+
+% 设置图例字体和样式
+hLegend.ItemTokenSize = [10, 10]; % 调整图例标记大小
+set(hLegend, 'FontName', 'Arial', 'FontSize', 12); % 设置图例字体
+
+% 在饼图外显示比例
+for i = 1:length(selected_investment_proportion)
+    % 计算每个扇区的中心角度
+    angle = (i - 1) * 360 / length(selected_investment_proportion) + 180 / length(selected_investment_proportion);
+    % 将角度转换为弧度
+    rad = deg2rad(angle);
+    % 计算文本标签的位置
+    x = 1.2 * cos(rad);
+    y = 1.2 * sin(rad);
+    % 添加文本标签
+    text(x, y, sprintf('%.2f%%', selected_investment_proportion(i) * 100), 'HorizontalAlignment', 'center', 'FontSize', 12, 'FontName', 'Arial');
+end
+
+% 背景颜色
+set(gcf, 'Color', [1 1 1]);

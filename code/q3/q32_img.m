@@ -5,16 +5,10 @@ data_investment = readtable('../../data/近二十年各产业投资情况数据�
 data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
 format long
 
+data_year = data_investment.Year;
 % 删除总GDP列与年份
 data_GDPs(:, 1:2) = [];
-data_year = data_investment.Years;
-data_investment(:, 1) = [];
-
-data_investment{[6, 11, 12], "S8"} = NaN;
-data_GDPs{[6, 11, 12], "S8"} = NaN;
-
-data_investment{[1, 6, 20], "S5"} = NaN;
-data_GDPs{[1, 6, 20], "S5"} = NaN;
+data_investment(:, 1:2) = [];
 
 disp('行业投资总值');
 head(data_investment, 20);
@@ -61,73 +55,38 @@ investment_return_proportion_table = array2table(investment_return_proportion, '
 disp('各行业投资回报率占所有投资回报率的比例：');
 disp(investment_return_proportion_table);
 
-%% 绘制柱状图
-% 设置颜色映射
-color_map = slanCM('jet');
-idx = linspace(1, size(color_map, 1), length(average_investment_returns));
-idx = round(idx);
-color_map = color_map(idx, :); % 为每个行业定义颜色
-
-% 窗口设置
-figureUnits = 'centimeters';
-figureWidth = 16;
-figureHeight = 16;
-figure('Units', figureUnits, 'Position', [0 0 figureWidth figureHeight]);
-
-% 绘制竖向多色柱状图
-bars = bar(average_investment_returns, 0.9, 'EdgeColor', 'k');
-bars.FaceColor = 'flat';
-for i = 1:length(average_investment_returns)
-    bars.CData(i, :) = color_map(i, :); % 为每个柱子设置对应颜色
-end
-
-% 添加数据标签
-for i = 1:length(average_investment_returns)
-    text(i, average_investment_returns(i), sprintf('%.2f%%', average_investment_returns(i)), ...
-        'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', ...
-        'FontSize', 12, 'FontName', 'Arial', 'Color', 'black');
-end
-
-% 设置图表标题和标签
-xlabel('Industry');
-ylabel('Average ROI (%)');
-% title('Average Investment Return Rate by Industry', 'FontSize', 14, 'FontWeight', 'bold');
-set(gca, 'Box', 'off', ...
-         'XTick', 1:length(average_investment_returns), ...
-         'XTickLabel', data_investment.Properties.VariableNames, ...
-         'XTickLabelRotation', 0, ...
-         'FontName', 'Arial', 'FontSize', 12);
-
-grid off;
+%% 选取投资回报率最高的三个产业
+[~, sorted_indices] = sort(investment_return_proportion, 'descend');
+top_3_indices = sorted_indices(1:3);
+top_3_proportions = investment_return_proportion(top_3_indices);
+top_3_labels = data_investment.Properties.VariableNames(top_3_indices);
 
 %% 绘制饼图
-figure('Units', figureUnits, 'Position', [0 0 figureWidth figureHeight]);
+figure;
+explode = [1 1 1]; % 突出显示所有部分
+colors = lines(3); % 使用线条颜色方案
 
-% 使用行业名称作为饼图的标签
-labels = data_investment.Properties.VariableNames;
+% 绘制饼图
+pie_handle = pie(top_3_proportions, explode);
 
-% 绘制饼图并设置比例标签，但不显示标签
-pie_handle = pie(investment_return_proportion);
-
-% 为饼图分区设置颜色并调整引线
+% 设置饼图颜色
 for i = 1:2:length(pie_handle)
-    pie_handle(i).FaceColor = color_map(ceil(i / 2), :); % 使用统一的颜色映射
+    pie_handle(i).FaceColor = colors(ceil(i/2), :);
 end
 
-% 删除饼图中的所有文本标签
+
 th = findobj(gca, 'Type', 'text');
-delete(th); % 删除标签文本
+% delete(th); % 删除标签文本
 
 % 在饼图旁边绘制标签和比例数据
-legend_labels = strcat(labels, ' (', arrayfun(@(x) sprintf('%.2f%%', x), investment_return_proportion, 'UniformOutput', false), ')');
+legend_labels = strcat(top_3_labels);
 hLegend = legend(pie_handle(1:2:end), legend_labels, 'Location', 'eastoutside'); % 标签位于图例外侧
 
 % 细节优化：去除图例的边框
 legend('boxoff');
 
 % 设置图表标题
-% hTitle = title('Proportion of Investment Return Rate by Industry', 'FontSize', 14, 'FontWeight', 'bold');
-set(gca, 'FontName', 'Arial', 'FontSize', 10);
+% title('Top 3 Industries by Investment Return Proportion', 'FontSize', 14, 'FontWeight', 'bold');
 
 % 设置图例字体和样式
 hLegend.ItemTokenSize = [10, 10]; % 调整图例标记大小
@@ -135,3 +94,6 @@ set(hLegend, 'FontName', 'Arial', 'FontSize', 12); % 设置图例字体
 
 % 背景颜色
 set(gcf, 'Color', [1 1 1]);
+
+% 设置图表字体
+set(gca, 'FontName', 'Arial', 'FontSize', 10);
