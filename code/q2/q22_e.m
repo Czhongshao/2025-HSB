@@ -5,24 +5,20 @@ data_investment = readtable('../../data/近二十年各产业投资情况数据�
 data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
 format long
 
-% 删除GDPs当中的总GDP列
-data_GDPs(:, 2) = [];
-
-data_investment{[6, 11, 12], "S8"} = NaN;
-data_GDPs{[6, 11, 12], "S8"} = NaN;
-
-data_investment{[1, 6, 20], "S5"} = NaN;
-data_GDPs{[1, 6, 20], "S5"} = NaN;
-
-% 显示导入数据的前几行
-disp('行业投资总值前5行数据：');
-head(data_investment, 5);
-disp('行业GDP总值前5行数据：');
-head(data_GDPs, 5);
-
-%% 数据导入与预处理
 % 导入时间数据 2003-2023年
-X_data_time = data_investment.Years; 
+X_data_time = data_investment.Year; 
+
+% 删除总GDP列与年份
+data_GDPs(:, 1:2) = [];
+% % data_year = data_investment.Years;
+data_investment(:, 1: 2) = [];
+
+
+disp('行业投资总值');
+head(data_investment, 20);
+disp('行业GDP总值');
+head(data_GDPs, 20);
+%% 数据导入与预处理
 
 % 初始化表格用于存储拟合结果
 T = table('Size', [9 8], 'VariableTypes', {'string', 'double', 'double', 'double', 'double', 'double', 'double', 'double'}, 'VariableNames', {'产业', '系数1', '指数系数1', '系数2', '指数系数2', 'R方（拟合系数）', 'MAE（平均绝对误差）', 'RMSE（均方根误差）'});

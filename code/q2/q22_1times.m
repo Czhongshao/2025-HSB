@@ -5,22 +5,21 @@ data_investment = readtable('../../data/近二十年各产业投资情况数据�
 data_GDPs = readtable('../../data/近二十年各行业生产总值数据-en.xlsx', 'Sheet', 'Sheet1', 'VariableNamingRule', 'preserve');
 format long
 
-% 删除GDPs当中的总GDP列
-data_GDPs(:, 2) = [];
+% 导入时间数据 2003-2023年
+X_data_time = data_investment.Year; 
 
-data_investment{[6, 11, 12], "S8"} = NaN;
-data_GDPs{[6, 11, 12], "S8"} = NaN;
+% 删除总GDP列与年份
+data_GDPs(:, 1:2) = [];
+% % data_year = data_investment.Years;
+data_investment(:, 1: 2) = [];
 
-data_investment{[1, 6, 20], "S5"} = NaN;
 
 disp('行业投资总值');
-head(data_investment, 5);
+head(data_investment, 20);
 disp('行业GDP总值');
-head(data_GDPs, 5);
+head(data_GDPs, 20);
 
 %% 数据导入
-% 导入时间数据 2003-2023年
-X_data_time = data_investment.Years; 
 
 % 初始化表格用于存储拟合结果
 T = table('Size', [9 6], 'VariableTypes', {'string', 'double', 'double', 'double', 'double', 'double'}, 'VariableNames', {'产业', '斜率', '截距', 'R方（拟合系数）', 'MAE（平均绝对误差）', 'RMSE（均方根误差）'});
@@ -32,7 +31,6 @@ for i = 2:10
     % 提取投资值和GDP值
     X_data_investment = data_investment{:, Chanye};
     Y_data_GDP = data_GDPs{:, Chanye};
-
 
     % 拟合函数
     [fitresult, gof] = investment_fun2(Chanye, X_data_investment, Y_data_GDP);
@@ -46,9 +44,11 @@ for i = 2:10
     MAE = nanmean(abs(residuals));
     RMSE = sqrt(nanmean(residuals.^2));
 
-
     % 将拟合结果添加到表格中
     T(i-1, :) = {Chanye, coeffs(1), coeffs(2), gof.rsquare, MAE, RMSE};
+
+    % 在控制台输出拟合表达式
+    fprintf('%s 的拟合表达式: GDP = %.4e * Investment + %.4e\n', Chanye, coeffs(1), coeffs(2));
 end
 
 % 显示拟合结果表格
